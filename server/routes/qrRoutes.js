@@ -123,4 +123,26 @@ router.post("/verify", async (req, res) => {
 
 });
 
+router.get("/attendance", async (req, res) => {
+
+  try {
+
+    const records = await Attendance.find().sort({
+      date: -1,
+    });
+
+    res.json(records);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      msg: "Server Error",
+    });
+
+  }
+
+});
+
 module.exports = router;
