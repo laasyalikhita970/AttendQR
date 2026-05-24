@@ -15,7 +15,7 @@ function AttendanceHistory() {
 
     try {
 
-      const res = await API.get("/qr/attendance");
+      const res = await API.get("/attendance");
 
       setRecords(res.data);
 
@@ -23,44 +23,77 @@ function AttendanceHistory() {
 
       console.log(error);
 
+      alert("Failed to fetch attendance ❌");
+
     }
 
   };
 
   return (
-    <div style={{ padding: "30px" }}>
+    <div className="min-h-screen bg-gray-900 text-white p-10">
 
-      <h1>Attendance History 📋</h1>
+      <div className="max-w-6xl mx-auto">
 
-      <table border="1" cellPadding="10">
+        <h1 className="text-4xl font-bold mb-10">
+          Attendance History 📋
+        </h1>
 
-        <thead>
-          <tr>
-            <th>Student ID</th>
-            <th>Class ID</th>
-            <th>Date</th>
-          </tr>
-        </thead>
+        <div className="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
 
-        <tbody>
+          <table className="w-full">
 
-          {records.map((item) => (
-            <tr key={item._id}>
+            <thead className="bg-gray-700">
 
-              <td>{item.studentId}</td>
+              <tr>
 
-              <td>{item.classId}</td>
+                <th className="p-4 text-left">
+                  Student ID
+                </th>
 
-              <td>
-                {new Date(item.date).toLocaleString()}
-              </td>
+                <th className="p-4 text-left">
+                  Class ID
+                </th>
 
-            </tr>
-          ))}
+                <th className="p-4 text-left">
+                  Date
+                </th>
 
-        </tbody>
+              </tr>
 
-      </table>
+            </thead>
+
+            <tbody>
+
+              {records.map((item, index) => (
+
+                <tr
+                  key={index}
+                  className="border-b border-gray-700"
+                >
+
+                  <td className="p-4">
+                    {item.studentId.slice(0, 6)}...
+                  </td>
+
+                  <td className="p-4">
+                    {item.classId}
+                  </td>
+
+                  <td className="p-4">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
 
     </div>
   );

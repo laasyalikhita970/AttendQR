@@ -64,7 +64,12 @@ router.post("/verify", async (req, res) => {
 
   try {
 
-    const { classId, token, userId } = req.body;
+    const {
+  classId,
+  token,
+  userId,
+  studentName,
+} = req.body;
 
     console.log("Incoming:");
     console.log(classId);
@@ -100,11 +105,11 @@ router.post("/verify", async (req, res) => {
     }
 
     // Save attendance
-    const attendance = new Attendance({
-      studentId: userId,
-      classId,
-    });
-
+   const attendance = new Attendance({
+  studentId: userId,
+  studentName,
+  classId,
+});
     await attendance.save();
 
     res.json({

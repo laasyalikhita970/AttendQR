@@ -4,6 +4,7 @@ import API from "../services/api";
 function Dashboard() {
 
   const [classId, setClassId] = useState("");
+
   const [qrImage, setQrImage] = useState("");
 
   const generateQR = async () => {
@@ -23,74 +24,55 @@ function Dashboard() {
       alert("QR generation failed ❌");
 
     }
-
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-10">
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
-        {/* Header */}
-        <div className="bg-black text-white p-6 rounded-2xl shadow-lg mb-8">
+        <h1 className="text-4xl font-bold mb-10">
+          Teacher Dashboard 👨‍🏫
+        </h1>
 
-          <h1 className="text-4xl font-bold">
-            AttendQR 🚀
-          </h1>
+        <div className="bg-gray-800 p-8 rounded-2xl shadow-2xl">
 
-          <p className="mt-2 text-gray-300">
-            Smart QR Attendance System
-          </p>
+          <h2 className="text-2xl font-semibold mb-6">
+            Generate Attendance QR
+          </h2>
 
-        </div>
+          <input
+            type="text"
+            placeholder="Enter Class ID"
+            value={classId}
+            onChange={(e) => setClassId(e.target.value)}
+            className="w-full p-4 rounded-lg bg-gray-700 outline-none mb-5"
+          />
 
-        {/* Main Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
+          <button
+            onClick={generateQR}
+            className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold"
+          >
+            Generate QR
+          </button>
 
-          {/* Generate QR Card */}
-          <div className="bg-white p-6 rounded-2xl shadow-lg">
+          {qrImage && (
 
-            <h2 className="text-2xl font-semibold mb-4">
-              Generate QR
-            </h2>
+            <div className="mt-10 text-center">
 
-            <input
-              type="text"
-              placeholder="Enter Class ID"
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              className="w-full border p-3 rounded-lg mb-4"
-            />
+              <h3 className="text-xl mb-5">
+                Scan This QR
+              </h3>
 
-            <button
-              onClick={generateQR}
-              className="w-full bg-black text-white p-3 rounded-lg hover:opacity-90"
-            >
-              Generate QR
-            </button>
-
-          </div>
-
-          {/* QR Display */}
-          <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center justify-center">
-
-            <h2 className="text-2xl font-semibold mb-4">
-              QR Preview
-            </h2>
-
-            {qrImage ? (
               <img
                 src={qrImage}
                 alt="QR Code"
-                className="w-72 h-72"
+                className="mx-auto w-72 rounded-xl shadow-lg"
               />
-            ) : (
-              <p className="text-gray-500">
-                QR will appear here
-              </p>
-            )}
 
-          </div>
+            </div>
+
+          )}
 
         </div>
 

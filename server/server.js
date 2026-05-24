@@ -7,7 +7,7 @@ dotenv.config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const qrRoutes = require("./routes/qrRoutes");
-
+const attendanceRoutes = require("./routes/attendanceRoutes");
 const app = express(); // 🔥 MUST be first before app.use
 
 // Middleware
@@ -17,6 +17,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/qr", qrRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.get("/", (req, res) => {
   res.send("AttendQR Backend Running 🚀");

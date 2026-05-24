@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { jwtDecode } from "jwt-decode";
 import API from "../services/api";
 
 function ScanQR() {
@@ -18,54 +19,66 @@ function ScanQR() {
       false
     );
 
-    scanner.render(success, error);
+    async function success(decodedText) {
 
-    async function success(result) {
+      scanner.clear();
 
       try {
 
-        console.log("Scanned Result:", result);
+        const data = JSON.parse(decodedText);
 
-        // Convert QR string to object
-        const data = JSON.parse(result);
+        console.log("Scanned Result:", data);
 
-        console.log("Parsed Data:", data);
+        const token = localStorage.getItem("token");
 
-        // Send to backend
-        const response = await API.post("/qr/verify", {
-          classId: data.classId,
-          token: data.token,
-          userId: "student123",
-        });
+        const user = jwtDecode(token);
 
-        alert(response.data.msg);
+        const res = await API.post("/qr/verify", {
+  classId: data.classId,
+  token: data.token,
+  userId: user.id,
+  studentName: user.name,
+});
+
+        alert(res.data.msg);
 
       } catch (err) {
 
         console.log(err);
 
-        if (err.response) {
-          alert(err.response.data.msg);
-        } else {
-          alert("QR verification failed");
-        }
+        alert("QR verification failed ❌");
 
       }
 
     }
 
     function error(err) {
-      console.warn(err);
+      console.log(err);
     }
+
+    scanner.render(success, error);
+
+    return () => {
+      scanner.clear().catch(() => {});
+    };
 
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="min-h-screen bg-gray-900 flex justify-center items-center">
 
-      <h1>Scan QR 📷</h1>
+      <div className="bg-gray-800 p-10 rounded-2xl shadow-2xl">
 
-      <div id="reader"></div>
+        <h1 className="text-4xl font-bold text-white mb-8 text-center">
+          Scan Attendance QR 📷
+        </h1>
+
+        <div
+          id="reader"
+          className="bg-white p-4 rounded-xl"
+        ></div>
+
+      </div>
 
     </div>
   );
