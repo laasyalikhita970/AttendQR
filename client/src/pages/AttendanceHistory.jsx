@@ -47,7 +47,7 @@ function AttendanceHistory() {
               <tr>
 
                 <th className="p-4 text-left">
-                  Student ID
+                  Student Name
                 </th>
 
                 <th className="p-4 text-left">
@@ -72,7 +72,7 @@ function AttendanceHistory() {
                 >
 
                   <td className="p-4">
-                    {item.studentId.slice(0, 6)}...
+                    {item.studentName}
                   </td>
 
                   <td className="p-4">
