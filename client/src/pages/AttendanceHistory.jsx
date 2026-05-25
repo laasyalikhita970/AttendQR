@@ -29,74 +29,123 @@ function AttendanceHistory() {
 
   };
 
+  // Group attendance by date
+  const groupedAttendance = records.reduce(
+    (groups, item) => {
+
+      const date = new Date(
+        item.createdAt
+      ).toLocaleDateString();
+
+      if (!groups[date]) {
+
+        groups[date] = [];
+
+      }
+
+      groups[date].push(item);
+
+      return groups;
+
+    },
+    {}
+  );
+
   return (
+
     <div className="min-h-screen bg-gray-900 text-white p-10">
 
       <div className="max-w-6xl mx-auto">
 
         <h1 className="text-4xl font-bold mb-10">
-          Attendance History 📋
+          Attendance History 📷
         </h1>
 
-        <div className="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        {
+          Object.entries(groupedAttendance)
+            .map(([date, attendance]) => (
 
-          <table className="w-full">
+              <div
+                key={date}
+                className="mb-10"
+              >
 
-            <thead className="bg-gray-700">
+                <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                  📅 {date}
+                </h2>
 
-              <tr>
+                <div className="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
 
-                <th className="p-4 text-left">
-                  Student Name
-                </th>
+                  <table className="w-full">
 
-                <th className="p-4 text-left">
-                  Class ID
-                </th>
+                    <thead className="bg-gray-700">
 
-                <th className="p-4 text-left">
-                  Date
-                </th>
+                      <tr>
 
-              </tr>
+                        <th className="p-4 text-left">
+                          Student Name
+                        </th>
 
-            </thead>
+                        <th className="p-4 text-left">
+                          Class ID
+                        </th>
 
-            <tbody>
+                        <th className="p-4 text-left">
+                          Time
+                        </th>
 
-              {records.map((item, index) => (
+                      </tr>
 
-                <tr
-                  key={index}
-                  className="border-b border-gray-700"
-                >
+                    </thead>
 
-                  <td className="p-4">
-                    {item.studentName}
-                  </td>
+                    <tbody>
 
-                  <td className="p-4">
-                    {item.classId}
-                  </td>
+                      {
+                        attendance.map((item, index) => (
 
-                  <td className="p-4">
-                    {new Date(item.createdAt).toLocaleString()}
-                  </td>
+                          <tr
+                            key={index}
+                            className="border-b border-gray-700"
+                          >
 
-                </tr>
+                            <td className="p-4">
+                              {item.studentName}
+                            </td>
 
-              ))}
+                            <td className="p-4">
+                              {item.classId}
+                            </td>
 
-            </tbody>
+                            <td className="p-4">
+                              {
+                                new Date(
+                                  item.createdAt
+                                ).toLocaleTimeString()
+                              }
+                            </td>
 
-          </table>
+                          </tr>
 
-        </div>
+                        ))
+                      }
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+            ))
+        }
 
       </div>
 
     </div>
+
   );
+
 }
 
 export default AttendanceHistory;

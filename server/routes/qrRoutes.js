@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+
 const QRCode = require("qrcode");
 const crypto = require("crypto");
 
 const Attendance = require("../models/Attendance");
 
-// Store active QR tokens temporarily
+// Store active QR temporarily
 let activeQR = {};
 
 /**
@@ -23,11 +24,16 @@ router.post("/generate", async (req, res) => {
       });
     }
 
-    // Create random token
-    const token = crypto.randomBytes(16).toString("hex");
+    // Generate random token
+    const token = crypto
+      .randomBytes(16)
+      .toString("hex");
 
-    // Store token in memory
-    activeQR[classId] = token;
+    // Store active QR with expiry
+    activeQR[classId] = {
+      token,
+      expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
+    };
 
     // QR payload
     const qrData = JSON.stringify({
@@ -37,7 +43,9 @@ router.post("/generate", async (req, res) => {
     });
 
     // Generate QR image
-    const qrImage = await QRCode.toDataURL(qrData);
+    const qrImage = await QRCode.toDataURL(
+      qrData
+    );
 
     res.json({
       qrImage,
@@ -65,51 +73,81 @@ router.post("/verify", async (req, res) => {
   try {
 
     const {
-  classId,
-  token,
-  userId,
-  studentName,
-} = req.body;
+      classId,
+      token,
+      userId,
+      studentName,
+    } = req.body;
 
-    console.log("Incoming:");
-    console.log(classId);
-    console.log(token);
+    console.log(req.body);
 
-    console.log("Stored:");
-    console.log(activeQR);
-
-    // Check QR exists
+    // Check active QR exists
     if (!activeQR[classId]) {
+
       return res.status(400).json({
         msg: "QR expired",
       });
+
+    }
+
+    // Check expiry
+    if (
+      Date.now() >
+      activeQR[classId].expiresAt
+    ) {
+
+      return res.status(400).json({
+        msg: "QR expired",
+      });
+
     }
 
     // Verify token
-    if (activeQR[classId] !== token) {
+    if (
+      activeQR[classId].token !== token
+    ) {
+
       return res.status(400).json({
         msg: "Invalid QR",
       });
+
     }
 
-    // Prevent duplicate attendance
-    const alreadyMarked = await Attendance.findOne({
-      studentId: userId,
-      classId,
-    });
+    /**
+     * Prevent duplicate attendance
+     * SAME student
+     * SAME class
+     * SAME day
+     */
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const alreadyMarked =
+      await Attendance.findOne({
+        studentId: userId,
+        classId,
+        createdAt: {
+          $gte: today,
+        },
+      });
 
     if (alreadyMarked) {
+
       return res.status(400).json({
-        msg: "Attendance already marked",
+        msg: "Attendance already marked today",
       });
+
     }
 
     // Save attendance
-   const attendance = new Attendance({
-  studentId: userId,
-  studentName,
-  classId,
-});
+    const attendance = new Attendance({
+      studentId: userId,
+      studentName,
+      classId,
+    });
+
     await attendance.save();
 
     res.json({
@@ -128,13 +166,17 @@ router.post("/verify", async (req, res) => {
 
 });
 
+/**
+ * GET ATTENDANCE HISTORY
+ */
 router.get("/attendance", async (req, res) => {
 
   try {
 
-    const records = await Attendance.find().sort({
-      date: -1,
-    });
+    const records =
+      await Attendance.find().sort({
+        createdAt: -1,
+      });
 
     res.json(records);
 

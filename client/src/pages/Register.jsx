@@ -39,7 +39,7 @@ function Register() {
     <div className="bg-gray-800 p-10 rounded-2xl shadow-2xl w-[400px]">
 
       <h1 className="text-3xl font-bold text-white mb-8 text-center">
-        AttendQR 🚀
+        AttendQR 📷
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
