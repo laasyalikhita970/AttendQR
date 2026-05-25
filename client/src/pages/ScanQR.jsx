@@ -32,6 +32,7 @@ function ScanQR() {
         const token = localStorage.getItem("token");
 
         const user = jwtDecode(token);
+        console.log(user);
 
         const res = await API.post("/qr/verify", {
   classId: data.classId,
